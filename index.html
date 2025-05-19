@@ -1,22 +1,54 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="ar">
 <head>
-  <title>التقاط صورة</title>
+  <meta charset="UTF-8">
+  <title>التقاط صورة بالكاميرا</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      direction: rtl;
+      background-color: #f4f4f4;
+      padding: 20px;
+    }
+    video, canvas {
+      width: 90%;
+      max-width: 320px;
+      border: 2px solid #ccc;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background-color: #008CBA;
+      color: white;
+    }
+    button:hover {
+      background-color: #0072a1;
+    }
+  </style>
 </head>
 <body>
-  <h2>اضغط على الزر لالتقاط صورة</h2>
-  <video id="video" width="320" height="240" autoplay></video>
+  <h2>التقط صورة باستخدام الكاميرا</h2>
+
+  <video id="video" autoplay playsinline></video>
   <br>
-  <button id="snap">التقط صورة</button>
-  <canvas id="canvas" width="320" height="240"></canvas>
+  <button id="snap">📸 التقط صورة</button>
+  <button id="download" style="display:none;">⬇️ تحميل الصورة</button>
+  <br>
+  <canvas id="canvas" style="display:none;"></canvas>
 
   <script>
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
-    const context = canvas.getContext('2d');
     const snap = document.getElementById('snap');
+    const download = document.getElementById('download');
+    const context = canvas.getContext('2d');
 
+    // تشغيل الكاميرا
     navigator.mediaDevices.getUserMedia({ video: true })
       .then(stream => {
         video.srcObject = stream;
@@ -25,8 +57,18 @@
         alert("حدث خطأ أثناء الوصول إلى الكاميرا: " + err);
       });
 
-    snap.addEventListener("click", () => {
-      context.drawImage(video, 0, 0, 320, 240);
+    // التقاط الصورة
+    snap.addEventListener('click', () => {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      context.drawImage(video, 0, 0);
+      canvas.style.display = 'block';
+      download.style.display = 'inline-block';
+
+      // إنشاء رابط تحميل
+      const image = canvas.toDataURL("image/png");
+      download.href = image;
+      download.download = "صورة.png";
     });
   </script>
 </body>
