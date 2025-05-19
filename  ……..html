@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Auto Camera Capture</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+      background-color: #f0f0f0;
+    }
+    video, canvas {
+      margin-top: 20px;
+      width: 90%;
+      max-width: 400px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h1>التقاط صورة تلقائيًا</h1>
+  <video id="video" autoplay playsinline></video>
+  <canvas id="canvas" style="display:none;"></canvas>
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+        return new Promise(resolve => video.onloadedmetadata = resolve);
+      })
+      .then(() => {
+        // انتظر ثانية واحدة ثم التقط الصورة
+        setTimeout(() => {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          context.drawImage(video, 0, 0, canvas.width, canvas.height);
+          // يمكنك هنا حفظ الصورة أو إرسالها إلى الخادم
+          video.style.display = 'none';
+          canvas.style.display = 'block';
+        }, 1500);
+      })
+      .catch(error => {
+        alert('حدث خطأ في الوصول إلى الكاميرا: ' + error);
+      });
+  </script>
+</body>
+</html>
